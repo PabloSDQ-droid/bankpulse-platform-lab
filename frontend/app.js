@@ -83,7 +83,7 @@ $('#githubForm').addEventListener('submit',async e=>{
 $('#dockerForm').addEventListener('submit',async e=>{
   e.preventDefault(); const ns=$('#dockerNamespace').value.trim(); if(!/^[a-z0-9][a-z0-9_-]+$/i.test(ns)){toast('Namespace de Docker Hub no válido');return;}
   $('#dockerResult').textContent='Consultando Docker Hub…';
-  try{ const data=await json(`https://hub.docker.com/v2/repositories/${encodeURIComponent(ns)}/bankpulse-payments-api/tags?page_size=5`); const tags=(data.results||[]).map(t=>t.name); if(!tags.length) throw new Error('sin tags publicados'); $('#dockerResult').innerHTML=`<strong>${esc(ns)}/bankpulse-payments-api</strong><br>Tags: ${tags.map(esc).join(', ')}`; state.docker=true; localStorage.setItem('bankpulse-docker-ns',ns); evidence(`Docker Hub verificó ${tags.length} tag(s) publicados.`); checkSupplyChain(); }
+  try{ const data=await json(`/dockerhub/${encodeURIComponent(ns)}/bankpulse-payments-api/tags?page_size=5`); const tags=(data.results||[]).map(t=>t.name); if(!tags.length) throw new Error('sin tags publicados'); $('#dockerResult').innerHTML=`<strong>${esc(ns)}/bankpulse-payments-api</strong><br>Tags: ${tags.map(esc).join(', ')}`; state.docker=true; localStorage.setItem('bankpulse-docker-ns',ns); evidence(`Docker Hub verificó ${tags.length} tag(s) publicados.`); checkSupplyChain(); }
   catch(err){ $('#dockerResult').textContent=`No disponible: ${err.message}`; }
 });
 function checkSupplyChain(){ save(); if(state.github&&state.docker) complete(5,'Pipeline de GitHub y artefacto de Docker Hub verificados.'); }
